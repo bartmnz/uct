@@ -7,7 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Uct {
@@ -35,9 +39,10 @@ public class Uct {
         
         // Read lines from the server until it tells us we have connected.
         String line = null;
-        int result = -1;
+
+       
         while ((line = reader.readLine( )) != null) {
-            if ((result = line.indexOf("You have logged in")) >= 0) {
+            if ((line.indexOf("You have logged in")) >= 0) {
                 // We are now logged in.
                 break;
             }
@@ -53,6 +58,7 @@ public class Uct {
         
         // Keep reading lines from the server.
         Monitor listener = new Monitor(reader, writer);
+        String room = null;
         try{
         	new SimpleGUI();
         	Scanner in = new Scanner(System.in);
@@ -63,14 +69,13 @@ public class Uct {
         		if ( input.startsWith("/")){
         			writer.write(input.substring(1) + "\r\n");
         			writer.flush( );
+        		}       		
+        		else{
+        			writer.write("/PRIVMSG "+ ':' + input);
         		}
-//				If MSG was supported this is where it would be handled.        		
-//        		else{
-//        			writer.write("MSG "+ ':' + input);
-//        		}
         		
         		
-        		System.out.println("In main() you typed" + input);
+        		//System.out.println("In main() you typed" + input);
         		//Thread.sleep(60000);
         	}
         }
@@ -94,6 +99,30 @@ class Monitor extends Thread{
 		start();
 	}
 	
+	private ArrayList<String> parseData(String name){
+		ArrayList<String> rValue = new ArrayList<String>();
+
+	    String re1="((?:[a-z][a-z0-9_]*))";	// Variable Name 1
+	    String re2="(!)";	// Any Single Character 1
+	    String re3="((?:[a-z][a-z0-9_]*))";	// Variable Name 2
+	    String re4="(@)";	// Any Single Character 2
+	    String re5="((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(?![\\d])";	// IPv4 IP Address 1
+	    String re6="( )";	// Any Single Character 3
+	    String re7="(.*)";	// non-greedy match on filler
+
+	    Pattern p = Pattern.compile(re1+re2+re3+re4+re5+re6+re7,Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	    Matcher m = p.matcher(name);
+	    if (m.find()){
+	        rValue.add(m.group(1)); // NICKNAME 
+	        rValue.add(m.group(3)); // USERNAME
+	        rValue.add(m.group(7)); // COMMAND
+	        
+	    }
+		return rValue;
+		
+	}
+	
+	
 	public void run(){
 		try{
 			// keep looping looking for input
@@ -105,9 +134,14 @@ class Monitor extends Thread{
 	                //writer.write("PRIVMSG " + channel + " :I got pinged!\r\n");
 	                writer.flush( );
 	            }
-	            else {
+	            else{
 	                // Print the raw line received by the bot.
-	                System.out.println(line);
+	            	ArrayList<String> msgData = parseData(line);
+	            	if (msgData.isEmpty()){
+	            		System.out.println(line);
+	            		continue;
+	            	}
+	                System.out.println('<' + msgData.get(0) + "> : " + msgData.get(2) );
 	            }
 	        }
 		}
