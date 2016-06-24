@@ -48,9 +48,9 @@ public class Uct {
         // Keep reading lines from the server.
         Monitor listener = new Monitor(reader, writer);
         try{
+        	Scanner in = new Scanner(System.in);
         	while(listener.isAlive()){
         		//TODO look for input from user
-        		Scanner in = new Scanner(System.in);
         		String input = in.nextLine();
         		writer.write(input + "\r\n");
         		writer.flush( );
