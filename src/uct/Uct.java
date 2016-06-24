@@ -44,18 +44,53 @@ public class Uct {
         writer.flush( );
         
         // Keep reading lines from the server.
-        while ((line = reader.readLine( )) != null) {
-            if (line.startsWith("PING")) {
-                // We must respond to PINGs to avoid being disconnected.
-                writer.write("PONG " + line.substring(5) + "\r\n");
-                //writer.write("PRIVMSG " + channel + " :I got pinged!\r\n");
-                writer.flush( );
-            }
-            else {
-                // Print the raw line received by the bot.
-                System.out.println(line);
-            }
+        Monitor listener = new Monitor(reader, writer);
+        try{
+        	while(listener.isAlive()){
+        		//TODO look for input from user
+        		System.out.println("In main()");
+        		Thread.sleep(60000);
+        	}
+        }
+        catch(Exception e ){
+        	//TODO shit happened bail out
         }
     }
 
+}
+
+// should be monitoring the connection for messages from server
+class Monitor extends Thread{
+	private BufferedReader reader;
+	private BufferedWriter writer;
+	
+	//constructor goes here
+	Monitor(BufferedReader reader, BufferedWriter writer){
+		super("Listening to server");
+		this.reader = reader;
+		this.writer = writer;
+		start();
+	}
+	
+	public void run(){
+		try{
+			// keep looping looking for input
+			String line = null;
+			while ((line = reader.readLine( )) != null) {
+	            if (line.startsWith("PING")) {
+	                // We must respond to PINGs to avoid being disconnected.
+	                writer.write("PONG " + line.substring(5) + "\r\n");
+	                //writer.write("PRIVMSG " + channel + " :I got pinged!\r\n");
+	                writer.flush( );
+	            }
+	            else {
+	                // Print the raw line received by the bot.
+	                System.out.println(line);
+	            }
+	        }
+		}
+		catch(Exception e){
+			//TODO some shit happened bail out
+		}
+	}
 }
