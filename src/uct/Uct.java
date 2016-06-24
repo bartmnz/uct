@@ -1,4 +1,10 @@
 package uct;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.TextArea;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -6,7 +12,7 @@ import java.util.Scanner;
 
 public class Uct {
 	public static void main(String[] args) throws Exception {
-
+		// connection setup  copy pasta from http://archive.oreilly.com/pub/h/1966
         // The server to connect to and our details.
         String server = "127.0.0.1";
         String nick = "CamelCase";
@@ -48,12 +54,21 @@ public class Uct {
         // Keep reading lines from the server.
         Monitor listener = new Monitor(reader, writer);
         try{
+        	new SimpleGUI();
         	Scanner in = new Scanner(System.in);
         	while(listener.isAlive()){
         		//TODO look for input from user
         		String input = in.nextLine();
-        		writer.write(input + "\r\n");
-        		writer.flush( );
+        		//have a command
+        		if ( input.startsWith("/")){
+        			writer.write(input.substring(1) + "\r\n");
+        			writer.flush( );
+        		}
+//				If MSG was supported this is where it would be handled.        		
+//        		else{
+//        			writer.write("MSG "+ ':' + input);
+//        		}
+        		
         		
         		System.out.println("In main() you typed" + input);
         		//Thread.sleep(60000);
@@ -99,5 +114,43 @@ class Monitor extends Thread{
 		catch(Exception e){
 			//TODO some shit happened bail out
 		}
+	}
+}
+
+
+class SimpleGUI extends Frame implements ActionListener{
+	//objects in GUI need to be declared here
+	private TextArea userList;
+	private TextArea messageList;
+	private TextArea infoList;
+	private TextField userInput;
+	
+	
+	
+	
+	public SimpleGUI(){
+		//TODO implement constructor
+		//TODO make something with .addActionListener(this)
+		//will be object to create ActionEvent i.e. call actionPreformed()
+		setLayout(new FlowLayout());
+		
+		userList = new TextArea();
+		userList.setText("test");
+		add(userList);
+		setVisible(true);
+	}
+	
+	// methods here
+	
+	// main
+//	public static void main(String args[]){
+//		//create instance of GUI
+//		new SimpleGUI();
+//	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO what happens when user interacts
+		
 	}
 }
