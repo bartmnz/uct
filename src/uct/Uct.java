@@ -1,8 +1,11 @@
 package uct;
 import java.io.*;
 import java.net.*;
+<<<<<<< HEAD
 import java.util.Scanner;
 
+=======
+>>>>>>> 74dc45e98b90e74d592723a82a5c9076eaf06f8f
 
 public class Uct {
 	public static void main(String[] args) throws Exception {
@@ -46,6 +49,7 @@ public class Uct {
         writer.flush( );
         
         // Keep reading lines from the server.
+<<<<<<< HEAD
         Monitor listener = new Monitor(reader, writer);
         try{
         	Scanner in = new Scanner(System.in);
@@ -61,10 +65,24 @@ public class Uct {
         }
         catch(Exception e ){
         	//TODO shit happened bail out
+=======
+        while ((line = reader.readLine( )) != null) {
+            if (line.startsWith("PING")) {
+                // We must respond to PINGs to avoid being disconnected.
+                writer.write("PONG " + line.substring(5) + "\r\n");
+                //writer.write("PRIVMSG " + channel + " :I got pinged!\r\n");
+                writer.flush( );
+            }
+            else {
+                // Print the raw line received by the bot.
+                System.out.println(line);
+            }
+>>>>>>> 74dc45e98b90e74d592723a82a5c9076eaf06f8f
         }
     }
 
 }
+<<<<<<< HEAD
 
 // should be monitoring the connection for messages from server
 class Monitor extends Thread{
@@ -101,3 +119,5 @@ class Monitor extends Thread{
 		}
 	}
 }
+=======
+>>>>>>> 74dc45e98b90e74d592723a82a5c9076eaf06f8f
