@@ -1,6 +1,8 @@
 package uct;
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
+
 
 public class Uct {
 	public static void main(String[] args) throws Exception {
@@ -48,8 +50,13 @@ public class Uct {
         try{
         	while(listener.isAlive()){
         		//TODO look for input from user
-        		System.out.println("In main()");
-        		Thread.sleep(60000);
+        		Scanner in = new Scanner(System.in);
+        		String input = in.nextLine();
+        		writer.write(input + "\r\n");
+        		writer.flush( );
+        		
+        		System.out.println("In main() you typed" + input);
+        		//Thread.sleep(60000);
         	}
         }
         catch(Exception e ){
