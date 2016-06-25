@@ -150,8 +150,7 @@ class Monitor extends Thread{
 	    }
 		return rValue;
 	}
-	
-	
+
 	public void run(){
 		try{
 			// keep looping looking for input
@@ -164,30 +163,43 @@ class Monitor extends Thread{
 	                writer.flush( );
 	            }
 	            else{
+	            	
 	                // Print the raw line received by the bot.
 	            	ArrayList<String> msgData = parseData(line);
 	            	if (msgData.isEmpty()){
 	            		System.out.println(line);
 	            		continue;
 	            	}
-	            	// we have a privmsg
-	            	if( msgData.get(0).equalsIgnoreCase("privmsg")){
+	            	switch( msgData.get(0).toUpperCase()){
+	            	case "PRIVMSG":
 	            		String data = msgData.get(3);
-	            		String message = data.substring(data.indexOf(" :")+ 3);
+	            		String message = data.substring(data.indexOf(" :"));
 	            		String isPriv = "";
 	            		if (!data.startsWith("#") && !data.startsWith(" #")){
 	            			isPriv = "PRIVATE MESSAGE";
 	            		}
-	            		System.out.println(isPriv + " <" + msgData.get(1) + "> :" + message );
-	            	}
-	            	else if(msgData.get(0).equalsIgnoreCase("servermsg")){
+	            		System.out.println(isPriv + " <" + msgData.get(1) + '>' + message );
+	            		break;
+	            	case "SERVERMSG":
 	            		int messageCode = Integer.parseInt(msgData.get(2)); // guaranteed to be an int per RE.
 	            		if( messageCode < 4 ) continue;
 	            		System.out.println("SERVER -- " + msgData.get(4));
-	            	}
-	            	else{
+	            		break;
+	            	case "JOIN":
+	            		System.out.println(msgData.get(1) + " just joined the room");
+	            		break;
+	            	case "PART":
+	            	case "QUIT":
+	            		System.out.println(msgData.get(1) + " just left the room");
+	            		break;
+	            	case "NICK":
+	            		System.out.println(msgData.get(1) + "just changed their name to " + msgData.get(3));
+	            		break;
+	            	case "ACTION":
+	            		//TODO implement where it ignores the SOH byte in the string
+	            	default:
 	            		System.out.println('<' + msgData.get(1) + "> : " + msgData.get(0) );
-	            	}	
+	            	}
 	            }
 	        }
 		}
