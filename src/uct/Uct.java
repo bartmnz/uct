@@ -70,7 +70,6 @@ public class Uct {
 				if (input.startsWith("/")) {
 					writer.write(input.substring(1) + "\r\n");
 					writer.flush();
-					String wtf = input.substring(1,4);
 					if (input.substring(1, 5).equalsIgnoreCase("quit")){
 						//TODO method has been remove as of JAVA 8 --
 						listener.interrupt();
@@ -79,15 +78,27 @@ public class Uct {
 						listener.stop();
 						break;
 					}
+					else if (input.substring(1, 5).equalsIgnoreCase("join")){
+						String re1="(\\/join #)";	// Unix Path 1
+					    String re4="((?:[a-z][a-z0-9_]*))";	// Variable Name 1
+
+					    Pattern p = Pattern.compile(re1+re4,Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+					    Matcher m = p.matcher(input);
+					    if (m.find()){
+					    	channel = '#' + m.group(2); // store the new channel
+					    }
+					}
+					
+					
 				} else {
 					writer.write("PRIVMSG " + channel + " :" + input + "\r\n");
 					writer.flush();
 				}
-				in.close();
+				
 				// System.out.println("In main() you typed" + input);
 				// Thread.sleep(60000);
 			}
-			
+			in.close();
 		} catch (Exception e) {
 			// TODO shit happened bail out
 		}
