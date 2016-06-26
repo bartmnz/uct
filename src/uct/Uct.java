@@ -1,11 +1,5 @@
 package uct;
 
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.TextArea;
-import java.awt.TextField;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -26,6 +20,7 @@ public class Uct {
 		String channel = "#irchacks";
 
 		// Connect directly to the IRC server.
+		@SuppressWarnings("resource")
 		Socket socket = new Socket(server, 6667);
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -54,7 +49,14 @@ public class Uct {
 
 		// Keep reading lines from the server.
 		Monitor listener = new Monitor(reader, writer);
-		String room = null;
+		parseUserInput(reader, writer, listener, channel);
+		socket.close();
+		
+		
+	}
+
+	@SuppressWarnings("deprecation")
+	private static void parseUserInput(BufferedReader reader, BufferedWriter writer, Monitor listener, String channel) {
 		try {
 			//new SimpleGUI();
 			Scanner in = new Scanner(System.in);
@@ -102,7 +104,9 @@ public class Uct {
 		} catch (Exception e) {
 			// TODO shit happened bail out
 		}
+		
 	}
+
 
 }
 
@@ -186,7 +190,7 @@ class Monitor extends Thread {
 					writer.flush();
 				} else {
 
-					// Print the raw line received by the bot.
+					// figure out what the message was.
 					ArrayList<String> msgData = parseData(line);
 					if (msgData.isEmpty()) {
 						System.out.println(line);
@@ -204,12 +208,7 @@ class Monitor extends Thread {
 						break;
 					case "SERVERMSG":
 						int messageCode = Integer.parseInt(msgData.get(2)); // guaranteed
-						// to
-						// be
-						// an
-						// int
-						// per
-						// RE.
+						// to be an int per RE.
 						if (messageCode < 4)
 							continue;
 						System.out.println("SERVER -- " + msgData.get(4));
@@ -239,36 +238,36 @@ class Monitor extends Thread {
 	}
 }
 
-class SimpleGUI extends Frame implements ActionListener {
-	// objects in GUI need to be declared here
-	private TextArea userList;
-	private TextArea messageList;
-	private TextArea infoList;
-	private TextField userInput;
-
-	public SimpleGUI() {
-		// TODO implement constructor
-		// TODO make something with .addActionListener(this)
-		// will be object to create ActionEvent i.e. call actionPreformed()
-		setLayout(new FlowLayout());
-
-		userList = new TextArea();
-		userList.setText("test");
-		add(userList);
-		setVisible(true);
-	}
-
-	// methods here
-
-	// main
-	// public static void main(String args[]){
-	// //create instance of GUI
-	// new SimpleGUI();
-	// }
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO what happens when user interacts
-
-	}
-}
+//class SimpleGUI extends Frame implements ActionListener {
+//	// objects in GUI need to be declared here
+//	private TextArea userList;
+//	private TextArea messageList;
+//	private TextArea infoList;
+//	private TextField userInput;
+//
+//	public SimpleGUI() {
+//		// TODO implement constructor
+//		// TODO make something with .addActionListener(this)
+//		// will be object to create ActionEvent i.e. call actionPreformed()
+//		setLayout(new FlowLayout());
+//
+//		userList = new TextArea();
+//		userList.setText("test");
+//		add(userList);
+//		setVisible(true);
+//	}
+//
+//	// methods here
+//
+//	// main
+//	// public static void main(String args[]){
+//	// //create instance of GUI
+//	// new SimpleGUI();
+//	// }
+//
+//	@Override
+//	public void actionPerformed(ActionEvent arg0) {
+//		// TODO what happens when user interacts
+//
+//	}
+//}
