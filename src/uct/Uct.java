@@ -75,7 +75,8 @@ public class Uct {
         			writer.flush( );
         		}       		
         		else{
-        			writer.write("/PRIVMSG "+ ':' + input);
+        			writer.write("PRIVMSG "+ channel + " :" + input + "\r\n");
+        			writer.flush( );
         		}
         		
         		
@@ -195,10 +196,12 @@ class Monitor extends Thread{
 	            	case "NICK":
 	            		System.out.println(msgData.get(1) + "just changed their name to " + msgData.get(3));
 	            		break;
-	            	case "ACTION":
-	            		//TODO implement where it ignores the SOH byte in the string
+	            	case "ACTION":
+	            		int length = msgData.get(3).length();
+	            		String action = msgData.get(3).substring(1,length-1);
+	            		System.out.println("Actions are dumb " + msgData.get(1) + ' ' + action);
 	            	default:
-	            		System.out.println('<' + msgData.get(1) + "> : " + msgData.get(0) );
+	            		System.out.println('<' + msgData.get(1) + "> : " + msgData.get(0) + ' ' + msgData.get(3));
 	            	}
 	            }
 	        }
